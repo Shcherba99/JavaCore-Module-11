@@ -14,7 +14,7 @@ public class Main {
         String[] array = {"1, 2, 0", "4, 5"};
         long a = 25214903917L;
         long c = 11L;
-        long m = (long) 2 ^ 48;
+        long m = (long) Math.pow(2, 48);
 
         System.out.println(getOddIndexNames(names));
         System.out.println(getUpperNames(names));
