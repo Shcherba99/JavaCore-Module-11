@@ -1,12 +1,10 @@
 package com.goit.javacore.module11.pshcherba;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class Main {
     public static void main(String[] args) {
@@ -15,11 +13,14 @@ public class Main {
         long a = 25214903917L;
         long c = 11L;
         long m = (long) Math.pow(2, 48);
+        Stream<Integer> first = Stream.of(1, 2, 3);
+        Stream<Integer> second = Stream.of(5, 6, 7, 8, 9);
 
         System.out.println(getOddIndexNames(names));
         System.out.println(getUpperNames(names));
         printSortNumbers(array);
         System.out.println(generateRandomStream(a, c, m).limit(10).toList());
+        System.out.println(zip(first, second).toList());
     }
 
 
@@ -57,5 +58,35 @@ public class Main {
         return Stream.iterate(1L, x -> (a * x + c) % m);
     }
 
+    //Task 5
+    public static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {
+        Iterator<T> firstIterator = first.iterator();
+        Iterator<T> secondIterator = second.iterator();
 
+        Iterator<T> zippedIterator = new Iterator<T>() {
+            boolean isFirstIteratorTurn = true;
+
+            @Override
+            public boolean hasNext() {
+                return firstIterator.hasNext() && secondIterator.hasNext();
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                if (isFirstIteratorTurn) {
+                    isFirstIteratorTurn = false;
+                    return firstIterator.next();
+                } else {
+                    isFirstIteratorTurn = true;
+                    return secondIterator.next();
+                }
+            }
+        };
+
+        Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(zippedIterator, Spliterator.ORDERED);
+        return StreamSupport.stream(spliterator, false);
+    }
 }
