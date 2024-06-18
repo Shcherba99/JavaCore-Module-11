@@ -1,5 +1,6 @@
 package com.goit.javacore.module11.pshcherba;
 
+import javax.xml.transform.stream.StreamSource;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -14,7 +15,7 @@ public class Main {
         long c = 11L;
         long m = (long) Math.pow(2, 48);
         Stream<Integer> first = Stream.of(1, 2, 3);
-        Stream<Integer> second = Stream.of(5, 6, 7, 8, 9);
+        Stream<Integer> second = Stream.of(5, 6);
 
         System.out.println(getOddIndexNames(names));
         System.out.println(getUpperNames(names));
@@ -60,33 +61,9 @@ public class Main {
 
     //Task 5
     public static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {
-        Iterator<T> firstIterator = first.iterator();
         Iterator<T> secondIterator = second.iterator();
-
-        Iterator<T> zippedIterator = new Iterator<T>() {
-            boolean isFirstIteratorTurn = true;
-
-            @Override
-            public boolean hasNext() {
-                return firstIterator.hasNext() && secondIterator.hasNext();
-            }
-
-            @Override
-            public T next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-                if (isFirstIteratorTurn) {
-                    isFirstIteratorTurn = false;
-                    return firstIterator.next();
-                } else {
-                    isFirstIteratorTurn = true;
-                    return secondIterator.next();
-                }
-            }
-        };
-
-        Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(zippedIterator, Spliterator.ORDERED);
-        return StreamSupport.stream(spliterator, false);
+        return first.flatMap(e -> secondIterator.hasNext()
+                ? Stream.of(e, secondIterator.next())
+                : Stream.empty());
     }
 }
